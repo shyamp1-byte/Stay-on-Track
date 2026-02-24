@@ -1,0 +1,41 @@
+{
+  "family": "strato-track",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "1024",
+  "memory": "2048",
+  "executionRoleArn": "arn:aws:iam::359484664038:role/ecsTaskExecutionRole-strato-track",
+  "taskRoleArn": "arn:aws:iam::359484664038:role/ecsTaskExecutionRole-strato-track",
+  "containerDefinitions": [
+    {
+      "name": "web",
+      "image": "359484664038.dkr.ecr.us-east-1.amazonaws.com/strato-track-web:latest",
+      "essential": true,
+      "cpu": 512,
+      "memory": 1024,
+      "memoryReservation": 1024,
+      "portMappings": [
+        {
+          "name": "web-8000-tcp",
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "environment": [
+        { "name": "JWT_SECRET", "value": "REMOVED_JWT" },
+        { "name": "DATABASE_URL", "value": "REMOVED_DB_URL" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/strato-track",
+          "awslogs-create-group": "true",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
