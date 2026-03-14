@@ -5,8 +5,8 @@ import uuid
 import hashlib
 from jose import jwt, JWTError
 from app.core.db import get_db
-from app.schemas.user import UserCreate, UserPublic
-from app.services.user import register_user, login_user
+from app.schemas.user import UserCreate, UserPublic, UserUpdate, PasswordChange
+from app.services.user import register_user, login_user, update_profile, change_password, delete_account
 from app.services.jwt import create_access_token, create_refresh_token, JWT_SECRET, JWT_ALG, JWT_AUD
 from app.schemas.auth import LoginRequest
 from app.schemas.token import TokenResponse
@@ -21,7 +21,7 @@ def hash_refresh_token(raw: str) -> str:
 @router.post("/register", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
 def register(payload: UserCreate, db: Session = Depends(get_db)):
     try:
-        user = register_user(db, email=payload.email, password=payload.password)
+        user = register_user(db, first_name=payload.first_name, last_name=payload.last_name, email=payload.email, password=payload.password)
         return user
     except ValueError as e:
         if str(e) == "EMAIL_TAKEN":
@@ -98,6 +98,30 @@ def logout(request: Request, response: Response, db: Session = Depends(get_db)):
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
 
-@router.get("/me")
+@router.get("/me", response_model=UserPublic)
 def me(user=Depends(get_current_user)):
-    return {"user": user}
+    return user
+
+@router.patch("/me", response_model=UserPublic)
+def update_me(payload: UserUpdate, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    try:
+        return update_profile(db, user, full_name=payload.full_name, email=payload.email)
+    except ValueError as e:
+        if str(e) == "EMAIL_TAKEN":
+            raise HTTPException(status_code=409, detail="Email already in use")
+        raise
+
+@router.post("/me/password", status_code=status.HTTP_204_NO_CONTENT)
+def update_password(payload: PasswordChange, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    try:
+        change_password(db, user, payload.current_password, payload.new_password)
+    except ValueError as e:
+        if str(e) == "WRONG_PASSWORD":
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
+        raise
+
+@router.delete("/me", status_code=status.HTTP_204_NO_CONTENT)
+def delete_me(response: Response, db: Session = Depends(get_db), user=Depends(get_current_user)):
+    delete_account(db, user)
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")

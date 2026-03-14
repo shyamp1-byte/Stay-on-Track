@@ -18,7 +18,11 @@ def update_project(db: Session, owner_id: UUID, project_id: UUID, title: str | N
     return project_repo.update_project(db=db, project=project, title=title, target_due_date=target_due_date)
 
 def list_projects(db: Session, owner_id: UUID):
-    return project_repo.get_projects_for_user(db, owner_id=owner_id)
+    owned = project_repo.get_projects_for_user(db, owner_id=owner_id)
+    from app.repositories import member as member_repo
+    shared_ids = member_repo.get_member_project_ids(db, user_id=owner_id)
+    shared = project_repo.get_projects_by_ids(db, project_ids=shared_ids)
+    return owned + shared
 
 def update_project_status(db: Session, owner_id: UUID, project_id: UUID, status: str):
     project = project_repo.get_project_by_id(db=db, project_id=project_id)

@@ -39,3 +39,8 @@ def update_project_status(db: Session, project: Project, status: str):
 def delete_project(db: Session, project: Project):
     db.delete(project)
     db.commit()
+
+def get_projects_by_ids(db: Session, project_ids: list):
+    if not project_ids:
+        return []
+    return db.query(Project).filter(Project.id.in_(project_ids)).all()

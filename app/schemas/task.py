@@ -14,6 +14,7 @@ class TaskCreate(BaseModel):
     description: str | None = None
     due_date: date | None = None
     priority: TaskPriority = "MEDIUM"
+    assigned_to_id: UUID | None = None
 
 
 class TaskPublic(BaseModel):
@@ -24,11 +25,22 @@ class TaskPublic(BaseModel):
     due_date: date | None
     status: str
     priority: str
+    created_by_id: UUID | None = None
+    created_by_name: str | None = None
+    assigned_to_id: UUID | None = None
+    assigned_to_name: str | None = None
     created_at: datetime
     updated_at: datetime
 
     class Config:
         from_attributes = True
+
+
+class TaskUpdate(BaseModel):
+    title: TitleStr | None = None
+    description: str | None = None
+    due_date: date | None = None
+    assigned_to_id: UUID | None = None
 
 
 class TaskUpdateStatus(BaseModel):

@@ -1,29 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Hero } from "@/components/ui/animated-shader-hero";
 
-export default function Home() {
-  const [status, setStatus] = useState("Loading...");
-
-  useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (!base) {
-      setStatus("Missing NEXT_PUBLIC_API_BASE_URL in .env.local");
-      return;
-    }
-    fetch(`${base}/db/ping`, { credentials: "include" })
-      .then(async (r) => {
-        const data = await r.json().catch(() => ({}));
-        setStatus(`${r.status} ${r.ok ? "OK" : "FAIL"} - ${JSON.stringify(data)}`);
-      })
-      .catch((e) => setStatus(`ERR - ${String(e)}`));
-  }, []);
-
+export default function HomePage() {
   return (
-    <main style={{ padding: 24, fontFamily: "system-ui" }}>
-      <h1>StratoTrack Frontend</h1>
-      <p>API ping:</p>
-      <pre>{status}</pre>
-    </main>
+    <Hero
+      headline={{ line1: "StratoTrack", line2: "Into Orbit" }}
+      subtitle="Plan projects, track tasks, and stay aligned — with a clean, focused workflow."
+      badge="Project Management Reimagined"
+      primaryLabel="Sign in"
+      primaryHref="/login"
+      secondaryLabel="Create account"
+      secondaryHref="/signup"
+    />
   );
 }
