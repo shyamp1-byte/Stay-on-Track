@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { User, Lock, Palette, Bell, Trash2, ChevronRight, Check, X, Eye, EyeOff } from "lucide-react";
@@ -8,7 +8,6 @@ import { apiFetch, logout } from "../../api-client/http";
 import { useProjects } from "../ProjectsContext";
 import { PageTransition } from "@/components/ui/page-transition";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 type Section = "profile" | "security" | "appearance" | "notifications" | "danger";
 
 const NAV: { key: Section; label: string; icon: React.ElementType; danger?: boolean }[] = [
@@ -19,7 +18,6 @@ const NAV: { key: Section; label: string; icon: React.ElementType; danger?: bool
   { key: "danger",        label: "Danger zone",   icon: Trash2, danger: true },
 ];
 
-// ─── Reusable field ───────────────────────────────────────────────────────────
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 18 }}>
@@ -40,7 +38,6 @@ const inputStyle: React.CSSProperties = {
   transition: "border-color 0.15s",
 };
 
-// ─── Toggle ───────────────────────────────────────────────────────────────────
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
@@ -67,7 +64,6 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
   );
 }
 
-// ─── Toast ────────────────────────────────────────────────────────────────────
 function Toast({ msg, ok }: { msg: string; ok: boolean }) {
   return (
     <motion.div
@@ -91,7 +87,6 @@ function Toast({ msg, ok }: { msg: string; ok: boolean }) {
   );
 }
 
-// ─── Sections ─────────────────────────────────────────────────────────────────
 function ProfileSection({ onToast }: { onToast: (msg: string, ok: boolean) => void }) {
   const { me, setMe } = useProjects();
   const nameParts = (me?.full_name ?? "").split(" ");
@@ -237,7 +232,7 @@ function AppearanceSection() {
   return (
     <div>
       <h2 style={sectionTitle}>Appearance</h2>
-      <p style={sectionSubtitle}>Customize how Strato Track looks for you.</p>
+      <p style={sectionSubtitle}>Customize how Stay on Track looks for you.</p>
       <div style={{ display: "flex", gap: 14, marginTop: 8 }}>
         {(["dark", "light"] as const).map(t => (
           <button key={t} type="button" onClick={() => applyTheme(t)}
@@ -265,26 +260,47 @@ function AppearanceSection() {
   );
 }
 
-function NotificationsSection() {
+function NotificationsSection({ onToast }: { onToast: (msg: string, ok: boolean) => void }) {
   const [prefs, setPrefs] = useState({
-    taskAssigned: true,
-    dueDateReminder: true,
-    projectUpdates: false,
-    weeklyDigest: false,
+    task_assigned: true,
+    due_date_reminder: true,
+    project_updates: false,
+    weekly_digest: false,
   });
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    apiFetch("/auth/me/notifications")
+      .then((data: typeof prefs) => { setPrefs(data); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  async function toggle(key: keyof typeof prefs, value: boolean) {
+    const next = { ...prefs, [key]: value };
+    setPrefs(next);
+    try {
+      await apiFetch("/auth/me/notifications", {
+        method: "PATCH",
+        body: JSON.stringify({ [key]: value }),
+      });
+    } catch {
+      setPrefs(prefs); // revert on failure
+      onToast("Failed to save preference", false);
+    }
+  }
 
   const items: { key: keyof typeof prefs; label: string; desc: string }[] = [
-    { key: "taskAssigned",    label: "Task assignments",   desc: "When a task is assigned to you" },
-    { key: "dueDateReminder", label: "Due date reminders", desc: "24 hours before a task is due" },
-    { key: "projectUpdates",  label: "Project updates",    desc: "When project status changes" },
-    { key: "weeklyDigest",    label: "Weekly digest",      desc: "A summary of your week every Monday" },
+    { key: "task_assigned",    label: "Task assignments",   desc: "When a task is assigned to you" },
+    { key: "due_date_reminder", label: "Due date reminders", desc: "24 hours before a task is due" },
+    { key: "project_updates",  label: "Project updates",    desc: "When project status changes" },
+    { key: "weekly_digest",    label: "Weekly digest",      desc: "A summary of your week every Monday" },
   ];
 
   return (
     <div>
       <h2 style={sectionTitle}>Notifications</h2>
-      <p style={sectionSubtitle}>Choose what you&apos;d like to be notified about.</p>
-      <div style={{ display: "grid", gap: 2, marginTop: 8 }}>
+      <p style={sectionSubtitle}>Choose which email notifications you receive.</p>
+      <div style={{ display: "grid", gap: 2, marginTop: 8, opacity: loaded ? 1 : 0.4, transition: "opacity 0.2s" }}>
         {items.map(item => (
           <div key={item.key} style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -296,12 +312,9 @@ function NotificationsSection() {
               <div style={{ fontSize: 14, fontWeight: 600, color: "var(--foreground)" }}>{item.label}</div>
               <div style={{ fontSize: 12, opacity: 0.45, color: "var(--foreground)", marginTop: 2 }}>{item.desc}</div>
             </div>
-            <Toggle on={prefs[item.key]} onChange={v => setPrefs(p => ({ ...p, [item.key]: v }))} />
+            <Toggle on={prefs[item.key]} onChange={v => toggle(item.key, v)} />
           </div>
         ))}
-      </div>
-      <div style={{ fontSize: 11, opacity: 0.35, color: "var(--foreground)", marginTop: 8 }}>
-        Email notifications are coming soon.
       </div>
     </div>
   );
@@ -365,7 +378,6 @@ function DangerSection({ onToast }: { onToast: (msg: string, ok: boolean) => voi
   );
 }
 
-// ─── Save button ──────────────────────────────────────────────────────────────
 function SaveButton({ saving, onClick, label = "Save changes" }: { saving: boolean; onClick: () => void; label?: string }) {
   return (
     <button
@@ -384,7 +396,6 @@ function SaveButton({ saving, onClick, label = "Save changes" }: { saving: boole
   );
 }
 
-// ─── Section title styles ─────────────────────────────────────────────────────
 const sectionTitle: React.CSSProperties = {
   fontSize: 18, fontWeight: 800, color: "var(--foreground)", marginBottom: 4, marginTop: 0,
 };
@@ -392,7 +403,6 @@ const sectionSubtitle: React.CSSProperties = {
   fontSize: 13, opacity: 0.5, color: "var(--foreground)", marginBottom: 24, marginTop: 0, lineHeight: 1.5,
 };
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function SettingsPage() {
   const [active, setActive] = useState<Section>("profile");
   const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
@@ -406,7 +416,7 @@ export default function SettingsPage() {
     profile:       <ProfileSection onToast={showToast} />,
     security:      <SecuritySection onToast={showToast} />,
     appearance:    <AppearanceSection />,
-    notifications: <NotificationsSection />,
+    notifications: <NotificationsSection onToast={showToast} />,
     danger:        <DangerSection onToast={showToast} />,
   };
 
@@ -419,7 +429,6 @@ export default function SettingsPage() {
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", gap: 28, alignItems: "start" }}>
-          {/* Nav */}
           <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {NAV.map(item => {
               const Icon = item.icon;
@@ -448,7 +457,6 @@ export default function SettingsPage() {
             })}
           </nav>
 
-          {/* Content panel */}
           <div style={{
             background: "rgba(99,102,241,0.04)", border: "1px solid rgba(99,102,241,0.12)",
             borderRadius: 14, padding: "28px 28px 32px",

@@ -35,7 +35,7 @@ async def observability_middleware(request: Request, call_next: Callable):
 
         _json_log(
             {
-                "service": "strato-track",
+                "service": "stay-on-track",
                 "request_id": request_id,
                 "user_id": str(user_id) if user_id else None,
                 "method": request.method,

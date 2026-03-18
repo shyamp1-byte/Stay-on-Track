@@ -6,13 +6,11 @@ import { motion, AnimatePresence } from "motion/react";
 import { Heart, ListChecks, Target, RefreshCw } from "lucide-react";
 import { useProjects, PROJECT_STATUS_COLORS } from "./ProjectsContext";
 import { apiFetch } from "../api-client/http";
-
-// ─── Lamp strip ───────────────────────────────────────────────────────────────
+import { DatePicker } from "@/components/ui/date-picker";
 
 function LampStrip() {
   return (
     <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 260, overflow: "hidden", pointerEvents: "none", zIndex: 0 }}>
-      {/* Wide outer glow cone — headlight sweep */}
       <motion.div
         initial={{ width: "0px", opacity: 0 }}
         animate={{ width: ["0px", "110%", "85%", "75%"], opacity: [0, 1, 1, 1] }}
@@ -23,7 +21,6 @@ function LampStrip() {
           background: "radial-gradient(ellipse 70% 100% at 50% 0%, rgba(109,40,217,0.22) 0%, rgba(99,102,241,0.10) 50%, transparent 80%)",
         }}
       />
-      {/* Mid glow — tighter, brighter */}
       <motion.div
         initial={{ width: "0px", opacity: 0 }}
         animate={{ width: ["0px", "80%", "58%", "50%"], opacity: [0, 0.9, 0.85, 0.85] }}
@@ -35,7 +32,6 @@ function LampStrip() {
           filter: "blur(8px)",
         }}
       />
-      {/* Core bloom — tight bright center */}
       <motion.div
         initial={{ width: "0px", opacity: 0 }}
         animate={{ width: ["0px", "460px", "340px", "300px"], opacity: [0, 0.7, 0.6, 0.55] }}
@@ -47,7 +43,6 @@ function LampStrip() {
           filter: "blur(22px)",
         }}
       />
-      {/* The strip line — sweeps out then snaps back */}
       <motion.div
         initial={{ width: "0px", opacity: 0 }}
         animate={{ width: ["0px", "92%", "68%", "58%"], opacity: [0, 1, 1, 1] }}
@@ -62,8 +57,6 @@ function LampStrip() {
     </div>
   );
 }
-
-// ─── Shimmer text ──────────────────────────────────────────────────────────────
 
 function ShimmerText({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
@@ -88,8 +81,6 @@ function ShimmerText({ children, style }: { children: React.ReactNode; style?: R
     </div>
   );
 }
-
-// ─── Template definitions ────────────────────────────────────────────────────
 
 type TaskTemplate = { title: string; priority: "LOW" | "MEDIUM" | "HIGH" };
 type Template = {
@@ -166,21 +157,18 @@ function GlassIcon({
         : "0 4px 18px rgba(0,0,0,0.32), 0 1px 0 rgba(255,255,255,0.28) inset, 0 -1px 0 rgba(0,0,0,0.14) inset",
       transition: "all 0.25s ease",
     }}>
-      {/* Top specular arc — the key "liquid glass" highlight */}
       <div style={{
         position: "absolute", top: 0, left: "10%", right: "10%", height: "44%",
         background: "linear-gradient(180deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.12) 65%, transparent 100%)",
         borderRadius: "0 0 55% 55%",
         pointerEvents: "none",
       }} />
-      {/* Bottom rim reflection */}
       <div style={{
         position: "absolute", bottom: 0, left: "22%", right: "22%", height: "18%",
         background: "linear-gradient(0deg, rgba(255,255,255,0.14) 0%, transparent 100%)",
         borderRadius: "50% 50% 0 0",
         pointerEvents: "none",
       }} />
-      {/* Icon */}
       <div style={{
         position: "relative", zIndex: 1,
         width: "100%", height: "100%",
@@ -202,8 +190,6 @@ function GlassIcon({
 }
 
 const PRIORITY_COLORS = { LOW: "#6b7280", MEDIUM: "#f59e0b", HIGH: "#ef4444" };
-
-// ─── Heart button ─────────────────────────────────────────────────────────────
 
 function HeartButton({ liked, onToggle }: { liked: boolean; onToggle: () => void }) {
   return (
@@ -228,8 +214,6 @@ function HeartButton({ liked, onToggle }: { liked: boolean; onToggle: () => void
     </motion.button>
   );
 }
-
-// ─── Template Picker ──────────────────────────────────────────────────────────
 
 function TemplatePicker() {
   const router = useRouter();
@@ -278,7 +262,6 @@ function TemplatePicker() {
         borderRadius: 16, border: "1px solid rgba(99,102,241,0.18)",
         background: "rgba(99,102,241,0.03)", overflow: "hidden",
       }}>
-        {/* Left: tabs */}
         <div style={{ borderRight: "1px solid rgba(99,102,241,0.14)", padding: "6px 0" }}>
           {TEMPLATES.map((t, i) => {
             const isActive = activeIdx === i;
@@ -323,7 +306,6 @@ function TemplatePicker() {
           })}
         </div>
 
-        {/* Right: task preview + form */}
         <div style={{ padding: "18px 20px" }}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -386,15 +368,10 @@ function TemplatePicker() {
                     color: "var(--foreground)", outline: "none",
                   }}
                 />
-                <input
-                  type="date"
+                <DatePicker
                   value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  style={{
-                    padding: "8px 11px", borderRadius: 9, fontSize: 13,
-                    border: "1px solid rgba(99,102,241,0.28)", background: "rgba(99,102,241,0.07)",
-                    color: "var(--foreground)", outline: "none", colorScheme: "dark",
-                  }}
+                  onChange={setDueDate}
+                  placeholder="Due date"
                 />
                 <div style={{ display: "flex", gap: 8 }}>
                   <button
@@ -431,8 +408,6 @@ function TemplatePicker() {
   );
 }
 
-// ─── Project card ─────────────────────────────────────────────────────────────
-
 const cardStyle = {
   padding: "16px 18px", borderRadius: 14, cursor: "pointer",
   border: "1px solid rgba(99,102,241,0.15)",
@@ -449,8 +424,6 @@ function onHoverLeave(e: React.MouseEvent<HTMLElement>) {
   e.currentTarget.style.background = "rgba(99,102,241,0.04)";
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
-
 export default function ForYouPage() {
   const router = useRouter();
   const { me, projects, starredIds, touchRecent, toggleStar, cycleProjectStatus } =
@@ -460,6 +433,7 @@ export default function ForYouPage() {
   const sharedProjects = projects.filter((p) => p.owner_id !== me?.id);
   const activeProjects = projects.filter((p) => p.status === "IN_PROGRESS");
   const doneProjects = projects.filter((p) => p.status === "DONE");
+  const sharedByMe = myProjects.filter((p) => (p.member_count ?? 0) > 0);
 
   function navigate(id: string) {
     touchRecent(id);
@@ -470,7 +444,8 @@ export default function ForYouPage() {
     { label: "Total projects", value: projects.length, sub: "across all workspaces" },
     { label: "In progress", value: activeProjects.length, sub: "currently active" },
     { label: "Completed", value: doneProjects.length, sub: "shipped & closed" },
-    { label: "Collaborations", value: sharedProjects.length, sub: "shared with you" },
+    { label: "Shared by you", value: sharedByMe.length, sub: "projects with collaborators" },
+    { label: "Shared with you", value: sharedProjects.length, sub: "collaborations" },
   ];
 
   return (
@@ -478,7 +453,6 @@ export default function ForYouPage() {
       <LampStrip />
       <div style={{ padding: "36px 28px", maxWidth: 1000, margin: "0 auto", position: "relative", zIndex: 1 }}>
 
-      {/* Greeting */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -490,9 +464,7 @@ export default function ForYouPage() {
         </ShimmerText>
       </motion.div>
 
-      {/* Stat cards */}
-      {projects.length > 0 && (
-        <div style={{
+      <div style={{
           display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
           gap: 12, marginBottom: 40,
         }}>
@@ -525,9 +497,7 @@ export default function ForYouPage() {
             </motion.div>
           ))}
         </div>
-      )}
 
-      {/* My projects */}
       {myProjects.length > 0 && (
         <section style={{ marginBottom: 36 }}>
           <div style={{
@@ -579,10 +549,6 @@ export default function ForYouPage() {
         </section>
       )}
 
-      {/* Template picker */}
-      <TemplatePicker />
-
-      {/* Shared with me */}
       {sharedProjects.length > 0 && (
         <section style={{ marginBottom: 36 }}>
           <div style={{
@@ -632,23 +598,7 @@ export default function ForYouPage() {
         </section>
       )}
 
-      {/* Empty state */}
-      {projects.length === 0 && (
-        <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            style={{
-              display: "grid", placeItems: "center", padding: "48px 0 32px",
-              opacity: 0.38, fontSize: 14, color: "var(--foreground)",
-            }}
-          >
-            No projects yet. Create one using the sidebar or start from a template below.
-          </motion.div>
-          <TemplatePicker />
-        </>
-      )}
+      <TemplatePicker />
       </div>
     </div>
   );

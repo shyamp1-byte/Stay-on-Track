@@ -7,7 +7,7 @@ from jose import jwt
 
 JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")
 JWT_ALG = "HS256"
-JWT_ISS = "strato-track"
+JWT_ISS = "stay-on-track"
 JWT_AUD = "strato-users"
 
 ACCESS_TTL_MIN = 15

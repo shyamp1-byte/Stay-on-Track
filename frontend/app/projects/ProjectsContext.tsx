@@ -18,6 +18,7 @@ export type Project = {
   status: "NOT_STARTED" | "IN_PROGRESS" | "BLOCKED" | "DONE";
   created_at: string;
   updated_at: string;
+  member_count: number;
 };
 
 export type Me = { id: string; email: string; full_name: string };

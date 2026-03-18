@@ -113,7 +113,6 @@ _HF_API_URL = f"https://router.huggingface.co/hf-inference/models/{_HF_MODEL}"
 
 
 def _first_sentence(text: str) -> str:
-    """Return only the first sentence, trimmed, with no space before punctuation."""
     import re
     text = re.sub(r"\s+([.!?])", r"\1", text.strip())
     for sep in (".", "!", "?"):
@@ -149,7 +148,6 @@ def summarize_task(
         resp = httpx.post(
             _HF_API_URL,
             headers=headers,
-            # max_length 28 ≈ 5–7 words: forces a genuinely short output
             json={"inputs": text, "parameters": {"max_length": 28, "min_length": 8}},
             timeout=30.0,
         )
@@ -159,7 +157,6 @@ def summarize_task(
             raise HTTPException(status_code=502, detail=f"HF {resp.status_code}: {resp.text[:200]}")
         data = resp.json()
         raw = _first_sentence(data[0]["summary_text"])
-        # If model still echoed the description, discard
         if raw.lower().strip(".") == task.description.lower().strip("."):
             return {"summary": None}
         return {"summary": raw}

@@ -121,7 +121,7 @@ export default function ProjectDetailPage() {
   const [savingTask, setSavingTask] = useState(false);
   const [saveErr, setSaveErr] = useState("");
   const [summaries, setSummaries] = useState<Record<string, string | null>>({});
-  const [summarized, setSummarized] = useState<Record<string, boolean>>({}); // true once attempted
+  const [summarized, setSummarized] = useState<Record<string, boolean>>({});
   const [summarizing, setSummarizing] = useState<Record<string, boolean>>({});
   const [summaryErrors, setSummaryErrors] = useState<Record<string, string>>({});
 
@@ -319,7 +319,6 @@ export default function ProjectDetailPage() {
   const progress = tasks.length > 0 ? Math.round((doneTasks / tasks.length) * 100) : 0;
   const filteredTasks = taskFilter === "ALL" ? tasks : tasks.filter((t) => t.status === taskFilter);
 
-  // Project not yet loaded (context still fetching)
   if (projects.length === 0) {
     return (
       <div style={{ display: "grid", placeItems: "center", height: "100%", opacity: 0.38, fontSize: 14, color: "var(--foreground)" }}>
@@ -328,7 +327,6 @@ export default function ProjectDetailPage() {
     );
   }
 
-  // Project not found
   if (!project) {
     return (
       <div style={{ display: "grid", placeItems: "center", height: "100%", padding: 40, textAlign: "center" }}>
@@ -355,7 +353,6 @@ export default function ProjectDetailPage() {
 
   return (
     <div style={{ padding: "24px 28px", maxWidth: 860, margin: "0 auto" }}>
-      {/* Breadcrumb */}
       <div style={{ fontSize: 12, opacity: 0.45, marginBottom: 20, color: "var(--foreground)" }}>
         <button
           onClick={() => router.push("/projects")}
@@ -367,7 +364,6 @@ export default function ProjectDetailPage() {
         <span>{project.title}</span>
       </div>
 
-      {/* Project header */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 6 }}>
           {editingTitle ? (
@@ -443,7 +439,6 @@ export default function ProjectDetailPage() {
           Due {project.target_due_date}
         </div>
 
-        {/* Members row */}
         <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
           {members.map((m) => {
             const initials = m.full_name.split(" ").map((n) => n[0] ?? "").join("").toUpperCase().slice(0, 2);
@@ -473,7 +468,6 @@ export default function ProjectDetailPage() {
                 }}>
                   {initials}
                 </div>
-                {/* Remove button — owner only, non-owner members */}
                 {isOwner && !isThisMemberOwner && hoveredMemberId === String(m.user_id) && (
                   <button
                     onClick={() => removeMember(String(m.user_id))}
@@ -492,7 +486,6 @@ export default function ProjectDetailPage() {
             );
           })}
 
-          {/* Invite button — owner only */}
           {isOwner && (
             <button
               onClick={() => { setShowInvite((v) => !v); setInviteErr(""); setInviteEmail(""); }}
@@ -509,7 +502,6 @@ export default function ProjectDetailPage() {
           )}
         </div>
 
-        {/* Invite form */}
         {isOwner && showInvite && (
           <div style={{ marginTop: 10, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
             <input
@@ -545,7 +537,6 @@ export default function ProjectDetailPage() {
           <div style={{ fontSize: 12, color: "#ef4444", marginTop: 6 }}>{inviteErr}</div>
         )}
 
-        {/* Progress bar */}
         {tasks.length > 0 && (
           <div style={{ marginTop: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
@@ -567,9 +558,7 @@ export default function ProjectDetailPage() {
         )}
       </div>
 
-      {/* Tasks section */}
       <div style={{ border: "1px solid rgba(99,102,241,0.15)", borderRadius: 16, padding: 18, background: "rgba(99,102,241,0.02)" }}>
-        {/* Tasks header */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
           <div style={{ fontSize: 14, fontWeight: 800, color: "var(--foreground)", display: "flex", alignItems: "center", gap: 8 }}>
             Tasks
@@ -592,7 +581,6 @@ export default function ProjectDetailPage() {
           </button>
         </div>
 
-        {/* New task form */}
         {showNewTask && (
           <div style={{ marginBottom: 14, padding: 12, borderRadius: 12, border: "1px solid rgba(99,102,241,0.22)", background: "rgba(99,102,241,0.04)" }}>
             <input
@@ -696,7 +684,6 @@ export default function ProjectDetailPage() {
           <div style={{ fontSize: 12, color: "#ef4444", marginBottom: 10 }}>{tasksErr}</div>
         )}
 
-        {/* Filter chips */}
         {tasks.length > 0 && (
           <div style={{ display: "flex", gap: 5, marginBottom: 12 }}>
             {(["ALL", ...TASK_STATUSES] as const).map((f) => {
@@ -721,7 +708,6 @@ export default function ProjectDetailPage() {
           </div>
         )}
 
-        {/* Task list */}
         {tasksLoading ? (
           <div style={{ display: "grid", gap: 8 }}>
             {[1, 2, 3].map((i) => (
@@ -754,7 +740,6 @@ export default function ProjectDetailPage() {
                     transition: "border-color 0.15s, background 0.15s",
                   }}
                 >
-                  {/* Main row */}
                   <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                     <TaskStatusIcon status={t.status} onClick={() => cycleTaskStatus(t)} />
                     <div style={{
@@ -767,7 +752,6 @@ export default function ProjectDetailPage() {
                       {t.title}
                     </div>
 
-                    {/* Assignee avatar */}
                     {t.assigned_to_name && (
                       <div
                         title={`Assigned to ${t.assigned_to_name}`}
@@ -784,7 +768,6 @@ export default function ProjectDetailPage() {
                       </div>
                     )}
 
-                    {/* Due date urgency chip */}
                     {urgencyColor && (
                       <div style={{
                         fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 999,
@@ -795,7 +778,6 @@ export default function ProjectDetailPage() {
                       </div>
                     )}
 
-                    {/* Edit toggle */}
                     <button
                       onClick={() => openTask(t)}
                       title={isExpanded ? "Close editor" : "Edit task"}
@@ -834,11 +816,9 @@ export default function ProjectDetailPage() {
                     >✕</button>
                   </div>
 
-                  {/* Always-visible info rows (hidden while edit panel is open) */}
                   {!isExpanded && (t.description || t.due_date || t.assigned_to_name || t.created_by_name || aiSummary) && (
                     <div style={{ marginTop: 8, marginLeft: 32, display: "grid", gap: 6 }}>
 
-                      {/* Description */}
                       {t.description && (
                         <div style={{
                           fontSize: 12, color: "var(--foreground)", opacity: 0.6, lineHeight: 1.5,
@@ -849,7 +829,6 @@ export default function ProjectDetailPage() {
                         </div>
                       )}
 
-                      {/* AI summary row */}
                       {t.description && (
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <span style={{
@@ -890,7 +869,6 @@ export default function ProjectDetailPage() {
                         </div>
                       )}
 
-                      {/* Attribution + due date row */}
                       {(t.assigned_to_name || t.due_date || t.created_by_name) && (
                         <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" as const }}>
                           {t.assigned_to_name && (
@@ -936,10 +914,8 @@ export default function ProjectDetailPage() {
                     </div>
                   )}
 
-                  {/* Edit panel */}
                   {isExpanded && (
                     <div style={{ marginTop: 14, borderTop: "1px solid rgba(99,102,241,0.14)", paddingTop: 14, display: "grid", gap: 12 }}>
-                      {/* Editable title */}
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.45, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 5 }}>Title</div>
                         <input
@@ -954,7 +930,6 @@ export default function ProjectDetailPage() {
                         />
                       </div>
 
-                      {/* Description */}
                       <div>
                         <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.45, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 5 }}>Description</div>
                         <textarea
@@ -972,7 +947,6 @@ export default function ProjectDetailPage() {
                         />
                       </div>
 
-                      {/* Due date + Assignee row */}
                       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                         <div>
                           <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.45, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 5 }}>Due date</div>
@@ -1003,7 +977,6 @@ export default function ProjectDetailPage() {
                         </div>
                       </div>
 
-                      {/* Meta + actions */}
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
                         <div style={{ fontSize: 11, opacity: 0.3, color: "var(--foreground)" }}>
                           Created {new Date(t.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}

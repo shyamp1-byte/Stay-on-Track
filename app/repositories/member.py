@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from uuid import UUID
 
 from app.models.project_member import ProjectMember
@@ -35,6 +36,18 @@ def remove_member(db: Session, project_id: UUID, user_id: UUID):
     if member:
         db.delete(member)
         db.commit()
+
+
+def get_member_counts_for_projects(db: Session, project_ids: list) -> dict:
+    if not project_ids:
+        return {}
+    rows = (
+        db.query(ProjectMember.project_id, func.count(ProjectMember.id).label("cnt"))
+        .filter(ProjectMember.project_id.in_(project_ids))
+        .group_by(ProjectMember.project_id)
+        .all()
+    )
+    return {row.project_id: row.cnt for row in rows}
 
 
 def get_member_project_ids(db: Session, user_id: UUID) -> list:

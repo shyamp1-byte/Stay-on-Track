@@ -4,12 +4,18 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
-from app.core.db import get_db
+from app.core.db import get_db, engine, Base
 from app.api import auth, projects, tasks, task_actions, members
 from app.core.observability import observability_middleware
 from fastapi.middleware.cors import CORSMiddleware
+import app.models  # ensures all models are registered with Base before create_all
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+def create_tables():
+    Base.metadata.create_all(bind=engine)
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,7 +42,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request, "app_name": "Strato Track"})
+    return templates.TemplateResponse("home.html", {"request": request, "app_name": "Stay on Track"})
 
 @app.get("/db/ping")
 def db_ping(db: Session = Depends(get_db)):

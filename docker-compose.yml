@@ -1,6 +1,5 @@
 services:
   db:
-    platform: linux/amd64
     image: postgres:15
     container_name: strato-db
     environment:
@@ -28,6 +27,10 @@ services:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/stratotrack
       JWT_SECRET: dev-secret
       HF_API_TOKEN: "${HF_API_TOKEN}"
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+      GOOGLE_REDIRECT_URI: "http://localhost:8000/auth/google/callback"
+      FRONTEND_URL: "http://localhost:3000"
     depends_on:
       db:
         condition: service_healthy

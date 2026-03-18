@@ -7,6 +7,7 @@ import { Home, Clock, Heart, Plus, ChevronRight, FolderOpen, X, Settings } from 
 import { motion, AnimatePresence } from "motion/react";
 import { logout } from "../api-client/http";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { DatePicker } from "@/components/ui/date-picker";
 import { ProjectsProvider, useProjects, PROJECT_STATUS_COLORS } from "./ProjectsContext";
 
 function initialsFromName(name?: string) {
@@ -75,7 +76,6 @@ function Sidebar() {
 
   return (
     <>
-      {/* Flyout panel */}
       <AnimatePresence>
         {navFlyout && (
           <motion.div
@@ -147,7 +147,6 @@ function Sidebar() {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
       <aside style={{
         borderRight: "1px solid rgba(99,102,241,0.20)",
         background: "linear-gradient(180deg, rgba(99,102,241,0.09) 0%, rgba(99,102,241,0.03) 100%)",
@@ -158,7 +157,6 @@ function Sidebar() {
         gap: 0,
       }}>
 
-        {/* Logo */}
         <Link href="/projects" style={{ textDecoration: "none", color: "inherit", marginBottom: 22 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{
@@ -169,13 +167,12 @@ function Sidebar() {
               flexShrink: 0,
             }}>S</div>
             <div>
-              <div style={{ fontWeight: 900, lineHeight: 1.15, fontSize: 14, letterSpacing: "-0.01em" }}>StratoTrack</div>
+              <div style={{ fontWeight: 900, lineHeight: 1.15, fontSize: 14, letterSpacing: "-0.01em" }}>Stay on Track</div>
               <div style={{ fontSize: 10, opacity: 0.4, letterSpacing: "0.04em" }}>Workspace</div>
             </div>
           </div>
         </Link>
 
-        {/* Nav items */}
         <nav style={{ display: "grid", gap: 2, marginBottom: 20 }}>
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -229,10 +226,8 @@ function Sidebar() {
           })}
         </nav>
 
-        {/* Divider */}
         <div style={{ height: 1, background: "rgba(99,102,241,0.14)", marginBottom: 16 }} />
 
-        {/* Projects list */}
         <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -333,10 +328,8 @@ function Sidebar() {
           )}
         </div>
 
-        {/* Divider */}
         <div style={{ height: 1, background: "rgba(99,102,241,0.14)", margin: "14px 0 12px" }} />
 
-        {/* New project button */}
         <div>
           <button
             onClick={() => setShowNewProject((v) => !v)}
@@ -376,15 +369,10 @@ function Sidebar() {
                       color: "var(--foreground)", outline: "none",
                     }}
                   />
-                  <input
-                    type="date"
+                  <DatePicker
                     value={newDueDate}
-                    onChange={(e) => setNewDueDate(e.target.value)}
-                    style={{
-                      padding: "8px 10px", borderRadius: 8, fontSize: 12,
-                      border: "1px solid rgba(99,102,241,0.22)", background: "rgba(99,102,241,0.06)",
-                      color: "var(--foreground)", outline: "none", colorScheme: "dark",
-                    }}
+                    onChange={setNewDueDate}
+                    placeholder="Due date"
                   />
                   <button
                     onClick={handleCreate}

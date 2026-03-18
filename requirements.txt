@@ -12,3 +12,4 @@ python-dotenv
 email-validator
 pytest
 httpx
+resend

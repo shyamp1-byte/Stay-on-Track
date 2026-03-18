@@ -22,6 +22,7 @@ class ProjectPublic(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
+    member_count: int = 0
 
     class Config:
         from_attributes = True

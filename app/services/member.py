@@ -22,6 +22,12 @@ def invite_member(db: Session, owner_id: UUID, project_id: UUID, email: str):
         raise ValueError("ALREADY_MEMBER")
 
     pm = member_repo.add_member(db, project_id=project_id, user_id=user.id, invited_by=owner_id)
+
+    owner = user_repo.get_user_by_id(db, owner_id)
+    inviter_name = owner.full_name if owner else "A teammate"
+    from app.services.email import send_invite_email
+    send_invite_email(to=user.email, inviter_name=inviter_name, project_name=project.name)
+
     return {
         "user_id": user.id,
         "email": user.email,

@@ -4,9 +4,6 @@ import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { GradientButton } from "./gradient-button";
 
-// ---------------------------------------------------------------------------
-// GLSL shaders
-// ---------------------------------------------------------------------------
 const VERT_SRC = `#version 300 es
 precision highp float;
 in vec2 a_pos;
@@ -150,9 +147,6 @@ void main() {
 }
 `;
 
-// ---------------------------------------------------------------------------
-// WebGL renderer
-// ---------------------------------------------------------------------------
 class WebGLRenderer {
   private gl: WebGL2RenderingContext;
   private program: WebGLProgram;
@@ -204,9 +198,6 @@ class WebGLRenderer {
   }
 }
 
-// ---------------------------------------------------------------------------
-// useShaderBackground hook
-// ---------------------------------------------------------------------------
 function useShaderBackground(canvasRef: React.RefObject<HTMLCanvasElement | null>) {
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -244,9 +235,6 @@ function useShaderBackground(canvasRef: React.RefObject<HTMLCanvasElement | null
   }, [canvasRef]);
 }
 
-// ---------------------------------------------------------------------------
-// Hero component
-// ---------------------------------------------------------------------------
 interface HeroProps {
   headline?: { line1: string; line2: string };
   subtitle?: string;
@@ -258,7 +246,7 @@ interface HeroProps {
 }
 
 export function Hero({
-  headline       = { line1: "StratoTrack", line2: "Into Orbit" },
+  headline       = { line1: "Stay on Track", line2: "Into Orbit" },
   subtitle       = "Plan projects, track tasks, and stay aligned — with a clean, focused workflow.",
   badge          = "Project Management Reimagined",
   primaryLabel   = "Sign in",
@@ -282,26 +270,22 @@ export function Hero({
 
   return (
     <div style={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: "#05081a" }}>
-      {/* WebGL canvas */}
       <canvas
         ref={canvasRef}
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", display: "block" }}
       />
 
-      {/* Centered content */}
       <div style={{
         position: "relative", zIndex: 1,
         display: "flex", flexDirection: "column", alignItems: "center",
         maxWidth: 640, padding: "0 48px", textAlign: "center",
       }}>
 
-        {/* Badge */}
         <div className="hero-badge" style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 32, padding: "6px 18px", borderRadius: 999, border: "1px solid rgba(139,92,246,0.30)", background: "rgba(109,40,217,0.12)", fontSize: 13, color: "rgba(196,181,253,0.88)", backdropFilter: "blur(8px)" }}>
           <span style={{ fontSize: 14 }}>✦</span>
           {badge}
         </div>
 
-        {/* Headline */}
         <h1 style={{ margin: 0, lineHeight: 1.05 }}>
           <span className="hero-line1" style={{ display: "block", fontSize: "clamp(44px, 5.5vw, 82px)", fontWeight: 900, letterSpacing: "-0.03em", color: "#fff" }}>
             {headline.line1}
@@ -311,12 +295,10 @@ export function Hero({
           </span>
         </h1>
 
-        {/* Subtitle */}
         <p className="hero-subtitle" style={{ margin: "20px 0 0", fontSize: "clamp(14px, 1.4vw, 17px)", lineHeight: 1.65, color: "rgba(196,181,253,0.60)", maxWidth: 440 }}>
           {subtitle}
         </p>
 
-        {/* Buttons */}
         <div className="hero-buttons" style={{ marginTop: 36, display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
           <GradientButton size="lg" onClick={() => router.push(primaryHref)}>
             {primaryLabel}
@@ -326,7 +308,6 @@ export function Hero({
           </GradientButton>
         </div>
 
-        {/* Footer note */}
         <p className="hero-footer" style={{ marginTop: 20, fontSize: 12, color: "rgba(196,181,253,0.30)" }}>
           By continuing, you agree to our terms and privacy policy.
         </p>

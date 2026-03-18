@@ -31,13 +31,11 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
   const [viewYear, setViewYear] = useState(parsed?.getFullYear() ?? today.getFullYear());
   const [viewMonth, setViewMonth] = useState(parsed?.getMonth() ?? today.getMonth());
 
-  // Keep view in sync when value changes externally
   useEffect(() => {
     if (parsed) {
       setViewYear(parsed.getFullYear());
       setViewMonth(parsed.getMonth());
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   useEffect(() => { setMounted(true); }, []);
@@ -47,11 +45,9 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
     const rect = triggerRef.current.getBoundingClientRect();
     const calW = 260;
     const calH = 300;
-    // Prefer right side; fall back to left
     const spaceRight = window.innerWidth - rect.right - 10;
     const openLeft = spaceRight < calW;
     const left = openLeft ? rect.left - calW - 8 : rect.right + 8;
-    // Vertical: align top, clamp to viewport
     let top = rect.top;
     if (top + calH > window.innerHeight - 12) top = window.innerHeight - calH - 12;
     if (top < 8) top = 8;
@@ -59,7 +55,6 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
     setOpen(true);
   }
 
-  // Close on outside click
   useEffect(() => {
     if (!open) return;
     function handle(e: MouseEvent) {
@@ -81,7 +76,6 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
     else setViewMonth(m => m + 1);
   }
 
-  // Build calendar grid
   const firstWeekday = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
   const cells: (number | null)[] = [];
@@ -165,7 +159,6 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
                 userSelect: "none",
               }}
             >
-              {/* Month / Year header */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
                 <button
                   type="button"
@@ -190,7 +183,6 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
                 </button>
               </div>
 
-              {/* Weekday labels */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, marginBottom: 4 }}>
                 {WEEKDAYS.map(d => (
                   <div key={d} style={{
@@ -202,7 +194,6 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
                 ))}
               </div>
 
-              {/* Day grid */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
                 {cells.map((d, i) => {
                   const isSel = d !== null && d === selectedDay;
@@ -234,7 +225,6 @@ export function DatePicker({ value, onChange, style, placeholder = "Set date" }:
                 })}
               </div>
 
-              {/* "Today" shortcut */}
               <div style={{ marginTop: 10, borderTop: "1px solid rgba(99,102,241,0.10)", paddingTop: 8, display: "flex", justifyContent: "center" }}>
                 <button
                   type="button"

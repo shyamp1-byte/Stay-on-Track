@@ -11,5 +11,5 @@ class MemberPublic(BaseModel):
     user_id: UUID
     email: str
     full_name: str
-    role: str  # "owner" | "member"
+    role: str
     joined_at: datetime

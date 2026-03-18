@@ -1,7 +1,6 @@
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
-// Deduplicate concurrent refresh attempts
 let refreshPromise: Promise<void> | null = null;
 
 async function tryRefresh(): Promise<void> {
@@ -26,7 +25,6 @@ export async function apiFetch(
 
   const res = await fetch(url, { ...init, headers, credentials: "include" });
 
-  // On 401, attempt a token refresh once then retry the original request
   if (res.status === 401 && _retry && !path.startsWith("/auth/refresh")) {
     if (!refreshPromise) {
       refreshPromise = tryRefresh().finally(() => {
@@ -59,7 +57,6 @@ export async function logout(): Promise<void> {
       credentials: "include",
     });
   } catch {
-    // Ignore network errors — still redirect
   }
   window.location.href = "/";
 }

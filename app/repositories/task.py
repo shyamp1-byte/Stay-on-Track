@@ -36,7 +36,6 @@ def update_task(db: Session, task: Task, title=_UNSET, description=_UNSET, due_d
     if assigned_to_id is not _UNSET:
         task.assigned_to_id = assigned_to_id
     db.commit()
-    # Re-query so eager-loaded relationships (created_by_user, assigned_to_user) are fresh
     return db.query(Task).filter(Task.id == task.id).first()
 
 def update_task_status(db: Session, task: Task, status: str):
