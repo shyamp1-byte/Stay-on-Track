@@ -5,7 +5,15 @@ from uuid import UUID
 
 from jose import jwt
 
-JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret")
+ENV = os.getenv("ENV", "development")
+JWT_SECRET = os.getenv("JWT_SECRET")
+
+if ENV != "development" and not JWT_SECRET:
+    raise RuntimeError("JWT_SECRET is required in non-development environments")
+
+if ENV == "development" and not JWT_SECRET:
+    JWT_SECRET = "dev-secret"
+
 JWT_ALG = "HS256"
 JWT_ISS = "stay-on-track"
 JWT_AUD = "strato-users"
