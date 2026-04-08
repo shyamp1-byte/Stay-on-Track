@@ -26,11 +26,11 @@
       "secrets": [
         {
           "name": "JWT_SECRET",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:359484664038:secret:strato-track/JWT_SECRET"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:359484664038:secret:strato-track/JWT_SECRET-WkBc6I"
         },
         {
           "name": "DATABASE_URL",
-          "valueFrom": "arn:aws:secretsmanager:us-east-1:359484664038:secret:strato-track/DATABASE_URL"
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:359484664038:secret:strato-track/DATABASE_URL-kzuMRy"
         }
       ],
       "logConfiguration": {
