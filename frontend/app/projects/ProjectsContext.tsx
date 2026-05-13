@@ -53,6 +53,8 @@ type Ctx = {
   setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
   recentIds: string[];
   starredIds: string[];
+  tasksTick: number;
+  bumpTasksTick: () => void;
   touchRecent: (id: string) => void;
   toggleStar: (id: string) => void;
   cycleProjectStatus: (project: Project) => Promise<void>;
@@ -76,6 +78,8 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const [starredIds, setStarredIds] = useState<string[]>([]);
+  const [tasksTick, setTasksTick] = useState(0);
+  function bumpTasksTick() { setTasksTick((n) => n + 1); }
 
   useEffect(() => {
     apiFetch("/auth/me")
@@ -183,7 +187,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
     <ProjectsContext.Provider
       value={{
         me, setMe, authChecked, projects, setProjects,
-        recentIds, starredIds, touchRecent, toggleStar,
+        recentIds, starredIds, tasksTick, bumpTasksTick, touchRecent, toggleStar,
         cycleProjectStatus, deleteProject, renameProject, createProject,
       }}
     >

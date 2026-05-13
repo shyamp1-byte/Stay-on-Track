@@ -90,7 +90,7 @@ export default function ProjectDetailPage() {
 
   const {
     me, projects, touchRecent, starredIds, toggleStar,
-    cycleProjectStatus, deleteProject, renameProject,
+    cycleProjectStatus, deleteProject, renameProject, tasksTick,
   } = useProjects();
 
   const project = projects.find((p) => p.id === projectId) ?? null;
@@ -152,6 +152,17 @@ export default function ProjectDetailPage() {
       .then((data) => setMembers(Array.isArray(data) ? (data as Member[]) : []))
       .catch(() => {});
   }, [projectId]);
+
+  // Re-fetch tasks silently when the AI makes changes (tasksTick bumped by layout)
+  useEffect(() => {
+    if (!projectId || tasksTick === 0) return;
+    apiFetch(`/projects/${projectId}/tasks`)
+      .then((data) => {
+        const taskList = Array.isArray(data) ? (data as Task[]) : [];
+        setTasks(taskList);
+      })
+      .catch(() => {});
+  }, [tasksTick]);
 
   async function inviteMember() {
     if (!inviteEmail.trim()) return;
@@ -1028,6 +1039,7 @@ export default function ProjectDetailPage() {
           </div>
         )}
       </div>
+
     </div>
   );
 }

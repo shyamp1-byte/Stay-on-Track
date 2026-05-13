@@ -600,6 +600,7 @@ export default function ForYouPage() {
 
       <TemplatePicker />
       </div>
+
     </div>
   );
 }

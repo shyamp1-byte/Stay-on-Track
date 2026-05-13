@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from app.core.db import get_db, engine, Base
-from app.api import auth, projects, tasks, task_actions, members
+from app.api import auth, projects, tasks, task_actions, members, chat
 from app.core.observability import observability_middleware
 from fastapi.middleware.cors import CORSMiddleware
 import app.models  # ensures all models are registered with Base before create_all
@@ -33,6 +33,7 @@ app.include_router(projects.router)
 app.include_router(tasks.router)
 app.include_router(task_actions.router)
 app.include_router(members.router)
+app.include_router(chat.router)
 app.middleware("http")(observability_middleware)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

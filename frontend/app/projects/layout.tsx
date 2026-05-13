@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import ChatPanel from "./[id]/ChatPanel";
 import Link from "next/link";
 import { Home, Clock, Heart, Plus, ChevronRight, FolderOpen, X, Settings } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -506,7 +507,27 @@ function Topbar() {
 }
 
 function ProjectsShell({ children }: { children: React.ReactNode }) {
-  const { authChecked } = useProjects();
+  const { authChecked, setProjects, bumpTasksTick } = useProjects();
+  const pathname = usePathname();
+
+  // Extract project ID from /projects/[id] routes
+  const projectIdMatch = pathname.match(/^\/projects\/([^/]+)$/);
+  const currentProjectId = projectIdMatch?.[1] ?? undefined;
+
+  function refreshProjects() {
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/projects`, {
+      credentials: "include",
+    })
+      .then((r) => r.json())
+      .then((data) => setProjects(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }
+
+  function handleTasksChanged() {
+    bumpTasksTick();
+    refreshProjects();
+  }
+
   if (!authChecked) {
     return (
       <div style={{ minHeight: "100dvh", display: "grid", placeItems: "center", background: "var(--background)" }}>
@@ -521,6 +542,11 @@ function ProjectsShell({ children }: { children: React.ReactNode }) {
         <Topbar />
         <main style={{ flex: 1, overflow: "auto" }}>{children}</main>
       </div>
+      <ChatPanel
+        projectId={currentProjectId}
+        onTasksChanged={handleTasksChanged}
+        onProjectsChanged={refreshProjects}
+      />
     </div>
   );
 }
