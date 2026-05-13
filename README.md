@@ -2,8 +2,6 @@
 
 A full-stack collaborative project management application with an integrated AI assistant that manages tasks and projects through natural language.
 
-![Stay on Track]
-
 ---
 
 ## Overview
